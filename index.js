@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
-  res.send("Hello World! Iam ready Boss Let's Rock");
+  res.send("Hello World!");
 });
 
 client.connect((err) => {
