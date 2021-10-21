@@ -5,12 +5,16 @@ require("dotenv").config();
 const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectId;
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jqsch.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jqsch.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+
+const uri =
+  "mongodb+srv://mydb1:gias0000@cluster0.3pdbi.mongodb.net/doctorsMangement?retryWrites=true&w=majority";
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
 const port = 5000;
 const app = express();
 app.use(cors());
@@ -40,6 +44,15 @@ client.connect((err) => {
     .db("doctorsMangement")
     .collection("category");
 
+  // const user = {
+  //   name: "hero",
+  //   phone: "354",
+  // };
+  // appointmentsCollection.insertOne(user).then((error, result) => {
+  //   console.log(result);
+  //   console.log("hoiseeeeeeeeeee");
+  // });
+
   app.post("/appointments", (req, res) => {
     appointmentsCollection.insertOne(req.body).then((result) => {
       res.send(result.acknowledged);
@@ -67,6 +80,12 @@ client.connect((err) => {
   app.get("/allDoctors", (req, res) => {
     doctorsCollection.find({}).toArray((err, documents) => {
       res.send(documents);
+    });
+  });
+  app.get("/allDonar", (req, res) => {
+    bloodDonarCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+      console.log(documents);
     });
   });
 
