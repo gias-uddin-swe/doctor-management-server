@@ -44,15 +44,6 @@ client.connect((err) => {
     .db("doctorsMangement")
     .collection("category");
 
-  // const user = {
-  //   name: "hero",
-  //   phone: "354",
-  // };
-  // appointmentsCollection.insertOne(user).then((error, result) => {
-  //   console.log(result);
-  //   console.log("hoiseeeeeeeeeee");
-  // });
-
   app.post("/appointments", (req, res) => {
     appointmentsCollection.insertOne(req.body).then((result) => {
       res.send(result.acknowledged);
