@@ -8,7 +8,7 @@ const ObjectId = require("mongodb").ObjectId;
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jqsch.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 const uri =
-  "mongodb+srv://mydb1:gias0000@cluster0.3pdbi.mongodb.net/doctorsMangement?retryWrites=true&w=majority";
+  "mongodb+srv://dbName:password@cluster0.3pdbi.mongodb.net/doctorsMangement?retryWrites=true&w=majority";
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -78,6 +78,7 @@ client.connect((err) => {
       res.send(documents);
       console.log(documents);
     });
+    // res.send("hell")
   });
 
   app.get("/allCategory", (req, res) => {
@@ -141,12 +142,12 @@ client.connect((err) => {
     patientCollection
       .find({ email: req.body.email })
       .toArray((err, documents) => {
-        if (documents.length > 0) {
+        if (documents?.length > 0) {
           // console.log("email is valid");
           patientCollection
             .find({ password: req.body.password })
             .toArray((error, results) => {
-              if (results.length > 0) {
+              if (results?.length > 0) {
                 res.send(true);
               } else {
                 res.send(false);
@@ -161,12 +162,12 @@ client.connect((err) => {
     adminCollection
       .find({ email: req.body.email })
       .toArray((err, documents) => {
-        if (documents.length > 0) {
+        if (documents?.length > 0) {
           // console.log("email is valid");
           adminCollection
             .find({ password: req.body.password })
             .toArray((error, results) => {
-              if (results.length > 0) {
+              if (results?.length > 0) {
                 res.send(true);
               } else {
                 res.send(false);
@@ -181,12 +182,12 @@ client.connect((err) => {
     doctorsCollection
       .find({ email: req.body.email })
       .toArray((err, documents) => {
-        if (documents.length > 0) {
+        if (documents?.length > 0) {
           // console.log("email is valid");
           doctorsCollection
             .find({ password: req.body.password })
             .toArray((error, results) => {
-              if (results.length > 0) {
+              if (results?.length > 0) {
                 res.send(true);
               } else {
                 res.send(false);
