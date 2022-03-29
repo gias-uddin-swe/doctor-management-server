@@ -3,29 +3,34 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
 const MongoClient = require("mongodb").MongoClient;
+const fileUpload = require("express-fileupload");
 const ObjectId = require("mongodb").ObjectId;
+const fs = require("fs-extra");
 
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jqsch.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jqsch.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const uri =
-  "mongodb+srv://dbName:password@cluster0.3pdbi.mongodb.net/doctorsMangement?retryWrites=true&w=majority";
+  "mongodb+srv://mydb1:RSGYvdmONUKh1mIx@cluster0.vyfql.mongodb.net/doctorsMangement?retryWrites=true&w=majority";
+const port = 5000;
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("prescription"));
+app.use(fileUpload());
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-const port = 5000;
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
-
 client.connect((err) => {
+  console.log(uri);
   const appointmentsCollection = client
     .db("doctorsMangement")
     .collection("pendingAppoinments");
@@ -43,6 +48,8 @@ client.connect((err) => {
   const categoryCollection = client
     .db("doctorsMangement")
     .collection("category");
+
+  console.log("database Connected");
 
   app.post("/appointments", (req, res) => {
     appointmentsCollection.insertOne(req.body).then((result) => {
@@ -310,6 +317,46 @@ client.connect((err) => {
         // console.log(result);
       });
     // console.log(req.params.id);
+  });
+
+  app.get("/getProducts", (req, res) => {
+    patientCollection.find({}).toArray((err, data) => res.send(data));
+  });
+
+  app.post("/prescription", (req, res) => {
+    console.log(req.files.file);
+    const file = req.files.file;
+    const filePath = `${__dirname}/prescription/${file.name}`;
+    file.mv(filePath, (err) => {
+      if (err) {
+        return res.status(500).send({
+          message: "can not upload pdf in server please try again leter",
+        });
+      } else {
+        res.send({ name: file.name, path: `/${file.name}` });
+      }
+
+      const newImg = fs.readFileSync(filePath);
+      const encdPdf = newImg.toString("base64");
+
+      var pdf = {
+        contentType: req.files.file.mimetype,
+        size: req.files.file.size,
+        img: Buffer(encdPdf, "base64"),
+      };
+      patientCollection.insertOne({ pdf }).then(
+        (result = () => {
+          fs.remove(filePath, (err) => {
+            if (err) {
+              console.log(err, "not valid");
+            } else {
+              res.send(result.insertedCount);
+              console.log(result.insertedCount);
+            }
+          });
+        })
+      );
+    });
   });
 });
 
